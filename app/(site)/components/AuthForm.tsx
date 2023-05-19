@@ -3,8 +3,8 @@
 
 import { data } from "autoprefixer";
 import { toast } from "react-hot-toast";
-import { signIn } from "next-auth/react"
-import { useCallback, useState } from "react";
+import { signIn, useSession } from "next-auth/react"
+import { useCallback, useEffect, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
 import { BsGithub, BsGoogle } from 'react-icons/bs';
 
@@ -17,9 +17,16 @@ import axios from "axios";
 type Variant = 'LOGIN' | 'REGISTER';
 
 const AuthForm = () => {
+    const session = useSession();
     const [variant, setVariant] = useState<Variant>('LOGIN');
     const [isLoading, setIsLoding] = useState(false);
     
+    useEffect(() => {
+        if(session?.status === 'authenticated'){
+            console.log('Authenticated')
+        }
+    },[session?.status]);
+
     const toggleVariant = useCallback(()=> {
         if(variant === 'LOGIN'){
             setVariant('REGISTER');
