@@ -12,20 +12,22 @@ import Input from "@/app/components/inputs/Input";
 import Button from "@/app/components/Button";
 import AuthSocialButton from "./AuthSocialButton";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 
 
 type Variant = 'LOGIN' | 'REGISTER';
 
 const AuthForm = () => {
     const session = useSession();
+    const router = useRouter();
     const [variant, setVariant] = useState<Variant>('LOGIN');
     const [isLoading, setIsLoding] = useState(false);
     
     useEffect(() => {
         if(session?.status === 'authenticated'){
-            console.log('Authenticated')
+            router.push('/users');
         }
-    },[session?.status]);
+    },[session?.status, router]);
 
     const toggleVariant = useCallback(()=> {
         if(variant === 'LOGIN'){
@@ -54,6 +56,7 @@ const AuthForm = () => {
 
         if (variant === 'REGISTER'){
             axios.post('/api/register',data)
+            .then(() => signIn('credentials',data))
             .catch(() => toast.error('Something went wrong!'))
             .finally(() => setIsLoding(false))
         }
@@ -70,6 +73,7 @@ const AuthForm = () => {
 
                 if(callback?.ok && !callback?.error){
                     toast.success('Logged in!')
+                    router.push('/users');
                 }
 
             }) 
